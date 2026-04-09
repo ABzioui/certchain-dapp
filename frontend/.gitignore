@@ -1,0 +1,14 @@
+# Dépendances
+node_modules/
+
+# Build Vite
+dist/
+dist-ssr/
+
+# Cache Vite
+.vite/
+
+# Variables d'environnement
+.env
+.env.local
+.env.production

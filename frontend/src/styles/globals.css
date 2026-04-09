@@ -1,0 +1,209 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Outfit:wght@300;400;500;600&display=swap');
+
+/* ─── Design Tokens ─────────────────────────────────────────────────────────── */
+:root {
+  /* Colors */
+  --bg-deep:        #080A0F;
+  --bg-surface:     #0D1017;
+  --bg-elevated:    #131820;
+  --bg-glass:       rgba(255, 255, 255, 0.03);
+  --bg-glass-hover: rgba(255, 255, 255, 0.06);
+
+  --gold:           #C9A84C;
+  --gold-light:     #E2C97E;
+  --gold-dim:       rgba(201, 168, 76, 0.15);
+  --gold-glow:      rgba(201, 168, 76, 0.3);
+
+  --cyan:           #00D4FF;
+  --cyan-dim:       rgba(0, 212, 255, 0.12);
+  --cyan-glow:      rgba(0, 212, 255, 0.25);
+
+  --white:          #F0EDE6;
+  --white-70:       rgba(240, 237, 230, 0.7);
+  --white-40:       rgba(240, 237, 230, 0.4);
+  --white-20:       rgba(240, 237, 230, 0.2);
+  --white-10:       rgba(240, 237, 230, 0.1);
+  --white-05:       rgba(240, 237, 230, 0.05);
+
+  --success:        #2DD4A0;
+  --success-dim:    rgba(45, 212, 160, 0.12);
+  --error:          #FF4D6D;
+  --error-dim:      rgba(255, 77, 109, 0.12);
+  --warning:        #FFB830;
+  --warning-dim:    rgba(255, 184, 48, 0.12);
+
+  /* Typography */
+  --font-display:   'Cormorant Garamond', Georgia, serif;
+  --font-mono:      'DM Mono', 'Courier New', monospace;
+  --font-body:      'Outfit', sans-serif;
+
+  /* Spacing */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* Transitions */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:    cubic-bezier(0.0, 0, 0.2, 1);
+  --duration-fast:   150ms;
+  --duration-normal: 300ms;
+  --duration-slow:   600ms;
+
+  /* Shadows */
+  --shadow-gold: 0 0 40px rgba(201, 168, 76, 0.15), 0 0 80px rgba(201, 168, 76, 0.05);
+  --shadow-cyan: 0 0 40px rgba(0, 212, 255, 0.1);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-elevated: 0 16px 64px rgba(0, 0, 0, 0.6);
+
+  /* Borders */
+  --border-subtle:  1px solid rgba(240, 237, 230, 0.06);
+  --border-gold:    1px solid rgba(201, 168, 76, 0.3);
+  --border-glass:   1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Reset ──────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-deep);
+  color: var(--white);
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ─── Background cryptographic grid ─────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(201, 168, 76, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 168, 76, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(201, 168, 76, 0.08) 0%, transparent 60%),
+              radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0, 212, 255, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Typography ─────────────────────────────────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+code, pre, .mono {
+  font-family: var(--font-mono);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ─── Selection ──────────────────────────────────────────────────────────────── */
+::selection {
+  background: var(--gold-dim);
+  color: var(--gold-light);
+}
+
+/* ─── Utility classes ────────────────────────────────────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 var(--gold-glow); }
+  50%       { box-shadow: 0 0 0 8px transparent; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+.animate-fade-in      { animation: fadeIn var(--duration-slow) var(--ease-out) both; }
+.animate-fade-in-scale { animation: fadeInScale var(--duration-slow) var(--ease-out) both; }
+
+/* Staggered delays */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }

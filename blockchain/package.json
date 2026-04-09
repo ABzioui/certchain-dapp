@@ -1,0 +1,22 @@
+{
+  "name": "blockchain",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test"
+  },
+  "devDependencies": {
+    "hardhat": "^3.3.0",
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.3",
+    "@nomicfoundation/hardhat-ethers": "^4.0.7",
+    "ethers": "^6.14.0",
+    "chai": "^6.2.2",
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^22.8.5",
+    "mocha": "^11.0.0",
+    "typescript": "~5.8.0",
+    "@openzeppelin/contracts": "^5.0.0"
+  }
+}

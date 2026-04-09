@@ -1,0 +1,19 @@
+# Dépendances
+node_modules/
+
+# Hardhat compilés (régénérés par npx hardhat compile)
+artifacts/
+cache/
+types/
+
+# Déploiement local (adresses changent à chaque session)
+deployments.json
+
+# Ignition (pas utilisé dans ce projet)
+ignition/
+
+# Variables d'environnement (clés privées !)
+.env
+
+# TypeScript compilé
+dist/

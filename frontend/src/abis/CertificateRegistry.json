@@ -1,0 +1,16 @@
+[
+  {"type":"constructor","inputs":[],"stateMutability":"nonpayable"},
+  {"type":"function","name":"accreditIssuer","inputs":[{"name":"issuer","type":"address"}],"outputs":[],"stateMutability":"nonpayable"},
+  {"type":"function","name":"revokeIssuerAccreditation","inputs":[{"name":"issuer","type":"address"}],"outputs":[],"stateMutability":"nonpayable"},
+  {"type":"function","name":"issueCertificate","inputs":[{"name":"certHash","type":"bytes32"},{"name":"ipfsHash","type":"string"}],"outputs":[{"name":"certId","type":"bytes32"}],"stateMutability":"nonpayable"},
+  {"type":"function","name":"revokeCertificate","inputs":[{"name":"certId","type":"bytes32"}],"outputs":[],"stateMutability":"nonpayable"},
+  {"type":"function","name":"linkNFT","inputs":[{"name":"certId","type":"bytes32"},{"name":"tokenId","type":"uint256"}],"outputs":[],"stateMutability":"nonpayable"},
+  {"type":"function","name":"getCertificate","inputs":[{"name":"certId","type":"bytes32"}],"outputs":[{"name":"certHash","type":"bytes32"},{"name":"issuer","type":"address"},{"name":"issuedAt","type":"uint256"},{"name":"revoked","type":"bool"},{"name":"nftTokenId","type":"uint256"},{"name":"ipfsHash","type":"string"}],"stateMutability":"view"},
+  {"type":"function","name":"isAccredited","inputs":[{"name":"issuer","type":"address"}],"outputs":[{"name":"","type":"bool"}],"stateMutability":"view"},
+  {"type":"function","name":"owner","inputs":[],"outputs":[{"name":"","type":"address"}],"stateMutability":"view"},
+  {"type":"event","name":"CertificateIssued","inputs":[{"name":"certId","type":"bytes32","indexed":true},{"name":"certHash","type":"bytes32","indexed":true},{"name":"issuer","type":"address","indexed":true},{"name":"issuedAt","type":"uint256","indexed":false},{"name":"ipfsHash","type":"string","indexed":false}],"anonymous":false},
+  {"type":"event","name":"CertificateRevoked","inputs":[{"name":"certId","type":"bytes32","indexed":true},{"name":"revokedBy","type":"address","indexed":true},{"name":"revokedAt","type":"uint256","indexed":false}],"anonymous":false},
+  {"type":"event","name":"IssuerAccredited","inputs":[{"name":"issuer","type":"address","indexed":true}],"anonymous":false},
+  {"type":"event","name":"IssuerRevoked","inputs":[{"name":"issuer","type":"address","indexed":true}],"anonymous":false},
+  {"type":"event","name":"NFTLinked","inputs":[{"name":"certId","type":"bytes32","indexed":true},{"name":"tokenId","type":"uint256","indexed":false}],"anonymous":false}
+]
