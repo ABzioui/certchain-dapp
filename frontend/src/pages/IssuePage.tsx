@@ -60,7 +60,7 @@ export function IssuePage() {
 
   const generateCertifiedPdf = async (verifyUrl: string) => {
     const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
-    const QRCode = (await import("qrcode")).default;
+    const QRCode = await import("qrcode");
 
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([595, 842]);
