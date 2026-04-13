@@ -1,41 +1,48 @@
-import React, { useState } from 'react';
-import { useIssue } from '../hooks/useIssue';
-import { useWallet } from '../context/WalletContext';
-import { Card } from '../components/ui/Card';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Badge } from '../components/ui/Badge';
-import { getCertVerifyUrl, formatHash } from '../utils/crypto';
-import type { IssueCertFormData } from '../types';
+import React, { useState } from "react";
+import { useIssue } from "../hooks/useIssue";
+import { useWallet } from "../context/WalletContext";
+import { Card } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Badge } from "../components/ui/Badge";
+import { getCertVerifyUrl, formatHash } from "../utils/crypto";
+import type { IssueCertFormData } from "../types";
+import { QRCodeSVG } from "qrcode.react";
 
 const EMPTY_FORM: IssueCertFormData = {
-  recipientName: '',
-  recipientAddr: '',
-  diplomaTitle:  '',
-  mention:       '',
-  date:          '',
-  ipfsHash:      '',
+  recipientName: "",
+  recipientAddr: "",
+  diplomaTitle: "",
+  mention: "",
+  date: "",
+  ipfsHash: "",
 };
 
-const MENTIONS = ['Très Bien', 'Bien', 'Assez Bien', 'Passable', '—'];
+const MENTIONS = ["Très Bien", "Bien", "Assez Bien", "Passable", "—"];
 
 export function IssuePage() {
   const { wallet, connect } = useWallet();
   const { issue, status, result, error, reset } = useIssue();
+
   const [form, setForm] = useState<IssueCertFormData>(EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<IssueCertFormData>>({});
 
-  const update = (field: keyof IssueCertFormData) =>
+  const update =
+    (field: keyof IssueCertFormData) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-      setForm(prev => ({ ...prev, [field]: e.target.value }));
+      setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
   const validate = (): boolean => {
     const newErrors: Partial<IssueCertFormData> = {};
-    if (!form.recipientName.trim()) newErrors.recipientName = 'Nom requis';
-    if (!form.diplomaTitle.trim()) newErrors.diplomaTitle = 'Intitulé requis';
-    if (!form.date)                newErrors.date = 'Date requise';
-    if (form.recipientAddr && !/^0x[a-fA-F0-9]{40}$/.test(form.recipientAddr))
-      newErrors.recipientAddr = 'Adresse Ethereum invalide';
+
+    if (!form.recipientName.trim()) newErrors.recipientName = "Nom requis";
+    if (!form.diplomaTitle.trim()) newErrors.diplomaTitle = "Intitulé requis";
+    if (!form.date) newErrors.date = "Date requise";
+
+    if (form.recipientAddr && !/^0x[a-fA-F0-9]{40}$/.test(form.recipientAddr)) {
+      newErrors.recipientAddr = "Adresse Ethereum invalide";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -45,19 +52,117 @@ export function IssuePage() {
     if (validate()) issue(form);
   };
 
-  const handleReset = () => { reset(); setForm(EMPTY_FORM); setErrors({}); };
+  const handleReset = () => {
+    reset();
+    setForm(EMPTY_FORM);
+    setErrors({});
+  };
 
-  // Success screen
-  if (status === 'success' && result) {
+  const generateCertifiedPdf = async (verifyUrl: string) => {
+    const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
+    const QRCode = (await import("qrcode")).default;
+
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([595, 842]);
+
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    page.drawText("CERTIFICAT OFFICIEL", {
+      x: 170,
+      y: 780,
+      size: 24,
+      font: boldFont,
+      color: rgb(0, 0, 0),
+    });
+
+    page.drawText(`Nom : ${form.recipientName}`, {
+      x: 60,
+      y: 700,
+      size: 18,
+      font,
+    });
+
+    page.drawText(`Diplôme : ${form.diplomaTitle}`, {
+      x: 60,
+      y: 660,
+      size: 18,
+      font,
+    });
+
+    page.drawText(`Mention : ${form.mention || "-"}`, {
+      x: 60,
+      y: 620,
+      size: 18,
+      font,
+    });
+
+    page.drawText(`Date : ${form.date}`, {
+      x: 60,
+      y: 580,
+      size: 18,
+      font,
+    });
+
+    const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
+      width: 220,
+      margin: 1,
+    });
+
+    const qrBytes = await fetch(qrDataUrl).then((r) => r.arrayBuffer());
+    const qrImage = await pdfDoc.embedPng(qrBytes);
+
+    page.drawText("Scanner pour vérifier", {
+      x: 350,
+      y: 320,
+      size: 14,
+      font: boldFont,
+    });
+
+    page.drawImage(qrImage, {
+      x: 340,
+      y: 80,
+      width: 180,
+      height: 180,
+    });
+
+    const pdfBytes = await pdfDoc.save();
+
+    const pdfArrayBuffer = pdfBytes.buffer.slice(
+      pdfBytes.byteOffset,
+      pdfBytes.byteOffset + pdfBytes.byteLength,
+    );
+
+    // force un vrai ArrayBuffer propre
+    const safeBytes = new Uint8Array(pdfBytes);
+
+    const blob = new Blob([safeBytes.buffer], {
+      type: "application/pdf",
+    });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `certificat-${form.recipientName}.pdf`;
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  if (status === "success" && result) {
     const verifyUrl = getCertVerifyUrl(result.certId);
+
     return (
       <div className="issue-page">
         <div className="page-container">
           <div className="issue-success animate-fade-in-scale">
             <div className="issue-success__icon">✓</div>
-            <h2 className="issue-success__title">Certificat émis avec succès</h2>
+            <h2 className="issue-success__title">
+              Certificat émis avec succès
+            </h2>
             <p className="issue-success__subtitle">
-              Le certificat a été enregistré de façon permanente sur la blockchain Ethereum.
+              Le certificat a été enregistré de façon permanente sur la
+              blockchain Ethereum.
             </p>
 
             <div className="issue-success__details">
@@ -65,11 +170,15 @@ export function IssuePage() {
                 <div className="success-detail">
                   <div className="success-detail__row">
                     <span className="success-detail__label">Cert ID</span>
-                    <span className="success-detail__value mono">{formatHash(result.certId, 16)}</span>
+                    <span className="success-detail__value mono">
+                      {formatHash(result.certId, 16)}
+                    </span>
                   </div>
                   <div className="success-detail__row">
                     <span className="success-detail__label">Transaction</span>
-                    <span className="success-detail__value mono">{formatHash(result.txHash, 16)}</span>
+                    <span className="success-detail__value mono">
+                      {formatHash(result.txHash, 16)}
+                    </span>
                   </div>
                   <div className="success-detail__row">
                     <span className="success-detail__label">Statut</span>
@@ -82,6 +191,17 @@ export function IssuePage() {
                 <div className="success-qr-section">
                   <div className="success-qr-label">URL de vérification</div>
                   <div className="success-qr-url mono">{verifyUrl}</div>
+
+                  <div className="success-qr-code">
+                    <p className="success-qr-text">Scanner pour vérifier</p>
+                    <QRCodeSVG
+                      value={verifyUrl}
+                      size={220}
+                      bgColor="#ffffff"
+                      fgColor="#000000"
+                    />
+                  </div>
+
                   <Button
                     variant="ghost"
                     size="sm"
@@ -94,6 +214,14 @@ export function IssuePage() {
             </div>
 
             <div className="issue-success__actions">
+              <Button
+                variant="gold"
+                size="sm"
+                onClick={() => generateCertifiedPdf(verifyUrl)}
+              >
+                Télécharger le PDF certifié
+              </Button>
+
               <Button variant="gold" size="lg" onClick={handleReset}>
                 Émettre un nouveau certificat
               </Button>
@@ -109,8 +237,6 @@ export function IssuePage() {
   return (
     <div className="issue-page">
       <div className="page-container">
-
-        {/* Header */}
         <div className="page-header animate-fade-in">
           <div className="page-eyebrow">
             <span className="eyebrow-line" />
@@ -119,18 +245,19 @@ export function IssuePage() {
           </div>
           <h1 className="page-title">Émettre un certificat</h1>
           <p className="page-subtitle">
-            Remplissez les informations du diplôme. Le hash des données
-            sera enregistré de façon permanente sur la blockchain.
+            Remplissez les informations du diplôme. Le hash des données sera
+            enregistré de façon permanente sur la blockchain.
           </p>
         </div>
 
-        {/* Wallet guard */}
-        {wallet.status !== 'connected' ? (
+        {wallet.status !== "connected" ? (
           <Card variant="gold" animate className="issue-wallet-gate">
             <div className="wallet-gate">
               <span className="wallet-gate__icon">⬡</span>
               <h3>Connexion wallet requise</h3>
-              <p>Seul un établissement accrédité peut émettre des certificats.</p>
+              <p>
+                Seul un établissement accrédité peut émettre des certificats.
+              </p>
               <Button variant="gold" size="lg" onClick={connect}>
                 Connecter MetaMask
               </Button>
@@ -139,10 +266,7 @@ export function IssuePage() {
         ) : (
           <form onSubmit={handleSubmit}>
             <div className="issue-form-layout">
-
-              {/* Left: Form */}
               <div className="issue-form-fields">
-
                 <Card variant="elevated" animate delay={100}>
                   <div className="form-section">
                     <h3 className="form-section__title">
@@ -152,7 +276,7 @@ export function IssuePage() {
                       <Input
                         label="Nom complet"
                         value={form.recipientName}
-                        onChange={update('recipientName')}
+                        onChange={update("recipientName")}
                         placeholder="Alice Martin"
                         error={errors.recipientName}
                         required
@@ -160,10 +284,9 @@ export function IssuePage() {
                       <Input
                         label="Adresse Ethereum (optionnel)"
                         value={form.recipientAddr}
-                        onChange={update('recipientAddr')}
+                        onChange={update("recipientAddr")}
                         placeholder="0x..."
                         error={errors.recipientAddr}
-                        hint="Pour minter le badge NFT directement au diplômé"
                       />
                     </div>
                   </div>
@@ -178,45 +301,41 @@ export function IssuePage() {
                       <Input
                         label="Intitulé du diplôme"
                         value={form.diplomaTitle}
-                        onChange={update('diplomaTitle')}
+                        onChange={update("diplomaTitle")}
                         placeholder="Master en Informatique"
                         error={errors.diplomaTitle}
                         required
                       />
+
                       <div className="field">
                         <label className="field__label">Mention</label>
                         <select
                           className="field__select"
                           value={form.mention}
-                          onChange={update('mention')}
+                          onChange={update("mention")}
                         >
                           <option value="">Sélectionner une mention</option>
-                          {MENTIONS.map(m => (
-                            <option key={m} value={m}>{m}</option>
+                          {MENTIONS.map((m) => (
+                            <option key={m} value={m}>
+                              {m}
+                            </option>
                           ))}
                         </select>
                       </div>
+
                       <Input
                         label="Date d'obtention"
                         type="date"
                         value={form.date}
-                        onChange={update('date')}
+                        onChange={update("date")}
                         error={errors.date}
                         required
-                      />
-                      <Input
-                        label="Hash IPFS des métadonnées (optionnel)"
-                        value={form.ipfsHash}
-                        onChange={update('ipfsHash')}
-                        placeholder="QmXyz..."
-                        hint="Hash IPFS du fichier JSON de métadonnées complet"
                       />
                     </div>
                   </div>
                 </Card>
 
-                {/* Error */}
-                {status === 'error' && error && (
+                {status === "error" && error && (
                   <Card variant="error" animate>
                     <div className="form-error">
                       <span>⚠</span>
@@ -233,48 +352,62 @@ export function IssuePage() {
                     type="submit"
                     variant="gold"
                     size="lg"
-                    loading={['hashing','pending','mining'].includes(status)}
+                    loading={["hashing", "pending", "mining"].includes(status)}
                   >
-                    {status === 'hashing' ? 'Calcul du hash...'
-                      : status === 'pending' ? 'En attente de signature...'
-                      : status === 'mining' ? 'Confirmation en cours...'
-                      : 'Émettre le certificat'}
+                    {status === "hashing"
+                      ? "Calcul du hash..."
+                      : status === "pending"
+                        ? "En attente de signature..."
+                        : status === "mining"
+                          ? "Confirmation en cours..."
+                          : "Émettre le certificat"}
                   </Button>
                 </div>
               </div>
-
               {/* Right: Preview */}
               <div className="issue-preview">
                 <Card variant="gold" animate delay={300}>
                   <h3 className="preview-title">Aperçu on-chain</h3>
+
                   <div className="preview-cert">
                     <div className="preview-cert__logo">⬡ CertChain</div>
+
                     <div className="preview-cert__diploma">
-                      {form.diplomaTitle || 'Intitulé du diplôme'}
+                      {form.diplomaTitle || "Intitulé du diplôme"}
                     </div>
+
                     <div className="preview-cert__name">
-                      {form.recipientName || 'Nom du diplômé'}
+                      {form.recipientName || "Nom du diplômé"}
                     </div>
+
                     {form.mention && (
-                      <div className="preview-cert__mention">{form.mention}</div>
+                      <div className="preview-cert__mention">
+                        {form.mention}
+                      </div>
                     )}
+
                     {form.date && (
                       <div className="preview-cert__date">
-                        {new Date(form.date).toLocaleDateString('fr-FR', {
-                          year: 'numeric', month: 'long', day: 'numeric'
+                        {new Date(form.date).toLocaleDateString("fr-FR", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
                         })}
                       </div>
                     )}
                   </div>
+
                   <div className="preview-info">
                     <div className="preview-info__row">
                       <span>Réseau</span>
                       <span className="mono">Hardhat / Sepolia</span>
                     </div>
+
                     <div className="preview-info__row">
                       <span>Standard</span>
                       <span className="mono">ERC-721</span>
                     </div>
+
                     <div className="preview-info__row">
                       <span>Données</span>
                       <span className="mono">SHA-256 (RGPD)</span>
@@ -282,11 +415,11 @@ export function IssuePage() {
                   </div>
                 </Card>
               </div>
-
             </div>
           </form>
         )}
       </div>
+
       <style>{STYLES}</style>
     </div>
   );
@@ -336,11 +469,19 @@ const STYLES = `
   .wallet-gate p { font-size: 14px; color: var(--white-40); }
 
   /* Form layout */
+
   .issue-form-layout {
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: minmax(0, 1fr) 340px;
     gap: var(--space-6);
     align-items: start;
+  }
+
+  .issue-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
   }
 
   .issue-form-fields { display: flex; flex-direction: column; gap: var(--space-4); }
@@ -451,6 +592,7 @@ const STYLES = `
     max-width: 600px; margin: 0 auto;
     text-align: center; padding: var(--space-10) 0;
   }
+    
 
   .issue-success__icon {
     width: 72px; height: 72px; border-radius: 50%;
@@ -499,12 +641,42 @@ const STYLES = `
     border-radius: var(--radius-sm);
   }
 
-  .issue-success__actions { display: flex; justify-content: center; }
+  .success-qr-code {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-2);
+}
 
-  .mono { font-family: var(--font-mono); }
-
-  @media (max-width: 860px) {
-    .issue-form-layout { grid-template-columns: 1fr; }
-    .issue-preview { position: static; }
+  .success-qr-text {
+    font-size: 13px;
+    color: var(--white-40);
+    margin: 0;
   }
-`;
+
+  .issue-success__actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+  .issue-success__actions button {
+    min-width: 300px;
+    box-shadow: 0 8px 30px rgba(201,168,76,0.18);
+  }
+
+    .mono { font-family: var(--font-mono); }
+
+    @media (max-width: 860px) {
+      .issue-form-layout { grid-template-columns: 1fr; }
+      .issue-preview { position: static; }
+    }
+  `;

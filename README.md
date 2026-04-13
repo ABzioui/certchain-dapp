@@ -11,7 +11,7 @@
 |---|---|---|
 | **Phase 1** | Conception architecture & Smart Contracts (Solidity) | ✅ 100% terminé |
 | **Phase 2** | Frontend React.js & intégration Ethers.js | ✅ 100% terminé |
-| Phase 3 | Module QR Code, NFT ERC-721 & DID | 🔜 À venir |
+| Phase 3 | Module QR Code, NFT ERC-721 & DID | ✅ 100% terminé |
 | Phase 4 | Tests unitaires, débogage & déploiement réseau de test | 🔜 À venir |
 | Phase 5 | Documentation & préparation de la soutenance | 🔜 À venir |
 
@@ -509,4 +509,24 @@ npm run dev
 
 ---
 
-*README maintenu — CertChain DApp v1.0 — Avril 2026*
+## Phase 3 — PDF certifié avec QR Code & vérification par import
+
+### Contexte
+La Phase 3 enrichit la DApp avec un certificat PDF téléchargeable intégrant un QR Code de vérification, ainsi que la possibilité d’importer directement ce PDF pour en vérifier l’authenticité.
+
+### Fonctionnalités ajoutées
+- génération d’un PDF certifié téléchargeable
+- intégration du QR Code dans le PDF
+- bouton de téléchargement après émission
+- import du PDF dans la page Vérifier
+- extraction automatique du QR depuis le PDF
+- vérification automatique du certificat depuis le PDF importé
+
+### Dépendances frontend à installer
+```bash
+npm install qrcode.react pdf-lib qrcode pdfjs-dist jsqr
+```
+
+---
+
+*README maintenu — CertChain DApp v1.3 — Avril 2026*
