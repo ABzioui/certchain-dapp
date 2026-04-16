@@ -7,13 +7,13 @@
 
 ## État d'avancement
 
-| Phase | Description | Statut |
-|---|---|---|
-| **Phase 1** | Conception architecture & Smart Contracts (Solidity) | ✅ 100% terminé |
-| **Phase 2** | Frontend React.js & intégration Ethers.js | ✅ 100% terminé |
-| Phase 3 | Module QR Code, NFT ERC-721 & DID | ✅ 100% terminé |
-| Phase 4 | Tests unitaires, débogage & déploiement réseau de test | 🔜 À venir |
-| Phase 5 | Documentation & préparation de la soutenance | 🔜 À venir |
+| Phase | Description | Statut | % |
+|---|---|---|---|
+| **Phase 1** | Conception architecture & Smart Contracts (Solidity) | ✅ Terminé | 100% |
+| **Phase 2** | Frontend React.js & intégration Ethers.js | ✅ Terminé | 100% |
+| **Phase 3** | Module QR Code, NFT ERC-721 & DID | ✅ Terminé | 100% |
+| **Phase 4** | Déploiement réseau de test Sepolia | ⚠️ Bloqué | 40% |
+| **Phase 5** | Documentation & préparation de la soutenance | 🔜 À venir | 30% |
 
 ---
 
@@ -25,8 +25,6 @@
 ---
 
 ### Prérequis logiciels
-
-Avant de commencer, installe ces outils si tu ne les as pas déjà :
 
 | Outil | Lien | Pourquoi |
 |---|---|---|
@@ -46,55 +44,33 @@ git clone <url-du-repo>
 cd certchain-dapp
 ```
 
----
-
-#### Étape 2 — Installer les dépendances du blockchain
+#### Étape 2 — Installer les dépendances blockchain
 
 ```powershell
 cd blockchain
 npm install
-```
-
-Vérifie que ça compile :
-
-```powershell
 npx hardhat compile
 ```
 
-Résultat attendu :
-```
-Compiled 4 Solidity files successfully
-```
+Résultat attendu : `Compiled 4 Solidity files successfully`
 
----
-
-#### Étape 3 — Installer les dépendances du frontend
+#### Étape 3 — Installer les dépendances frontend
 
 ```powershell
 cd ../frontend
 npm install
 ```
 
----
-
 #### Étape 4 — Installer MetaMask dans Chrome
 
-1. Va sur **https://metamask.io** et clique **"Download"**
-2. Installe l'extension Chrome
-3. Crée un nouveau wallet (garde bien ta phrase secrète de côté)
-4. Une fois installé, tu verras l'icône 🦊 en haut à droite de Chrome
-
----
+1. Va sur **https://metamask.io** → installe l'extension Chrome
+2. Crée un nouveau wallet
 
 #### Étape 5 — Ajouter le réseau Hardhat Local dans MetaMask
 
-C'est le réseau blockchain local sur lequel tourne le projet en développement.
-
-1. Clique sur 🦊 MetaMask
-2. Clique sur le nom du réseau en haut (ex: **"Ethereum Mainnet"**)
-3. Clique **"Ajouter un réseau"**
-4. Clique **"Ajouter un réseau manuellement"** en bas de page
-5. Remplis exactement :
+1. Clique sur 🦊 MetaMask → nom du réseau → **"Ajouter un réseau"**
+2. **"Ajouter un réseau manuellement"**
+3. Remplis :
 
 ```
 Nom du réseau  :  Hardhat Local
@@ -103,36 +79,20 @@ ID de chaîne   :  31337
 Symbole        :  ETH
 ```
 
-6. Clique **Enregistrer** puis **"Passer sur Hardhat Local"**
-
----
-
 #### Étape 6 — Importer le compte de test dans MetaMask
 
-Ce compte est fourni automatiquement par Hardhat. Il contient 10 000 ETH fictifs pour les tests.
-
-1. Dans MetaMask, clique sur l'icône de compte en haut à droite
-2. Clique **"Ajouter un compte ou du matériel"**
-3. Clique **"Importer un compte"**
-4. Colle cette clé privée :
+1. MetaMask → icône compte → **"Importer un compte"**
+2. Colle cette clé privée :
 
 ```
 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
-5. Clique **Importer**
-
-Tu devrais voir **10 000 ETH** sur ce compte.
-
-> ⚠️ Cette clé privée est publique et connue de tous les développeurs Hardhat. Elle est uniquement utilisée pour les tests locaux. Ne jamais l'utiliser sur un vrai réseau Ethereum.
+> ⚠️ Clé publique Hardhat — uniquement pour les tests locaux. Ne jamais utiliser sur mainnet.
 
 ---
 
 ### LANCEMENT — À faire à chaque session de travail
-
-À chaque fois que tu veux travailler sur le projet, tu dois ouvrir **3 terminaux** dans l'ordre suivant.
-
----
 
 #### Terminal 1 — Lancer le nœud blockchain local
 
@@ -141,11 +101,7 @@ cd certchain-dapp/blockchain
 npx hardhat node
 ```
 
-**Garde ce terminal ouvert en permanence.** Il simule la blockchain Ethereum en local. Si tu le fermes, toutes les données sont perdues et il faudra redéployer.
-
-Tu verras s'afficher une liste de comptes de test avec leurs clés privées — c'est normal.
-
----
+**Garde ce terminal ouvert en permanence.**
 
 #### Terminal 2 — Déployer les contrats et accréditer
 
@@ -155,11 +111,7 @@ npx hardhat run scripts/deploy.ts --network localhost
 npx hardhat run scripts/accredit.ts --network localhost
 ```
 
-Le premier script déploie les 4 Smart Contracts sur le nœud local et génère un fichier `deployments.json` avec leurs adresses.
-
-Le deuxième script accrédite le compte de test comme établissement émetteur autorisé, et enregistre son identité DID.
-
-**Important :** après chaque déploiement, les adresses des contrats changent. Il faut copier les nouvelles adresses dans le frontend. Ouvre `blockchain/deployments.json` et copie son contenu dans `frontend/src/abis/deployments.json`.
+Le script `deploy.ts` met à jour automatiquement `frontend/src/abis/deployments.json`.
 
 Résultat attendu :
 ```
@@ -171,8 +123,6 @@ Résultat attendu :
 ✅ DID enregistré pour l'émetteur !
 ```
 
----
-
 #### Terminal 3 — Lancer le frontend
 
 ```powershell
@@ -182,13 +132,11 @@ npm run dev
 
 Ouvre **http://localhost:5173** dans Chrome.
 
----
-
 #### Dans MetaMask
 
-- Vérifie que le réseau sélectionné est bien **Hardhat Local**
-- Vérifie que le compte actif est bien le compte importé (celui avec 10 000 ETH)
-- Sur le site, clique **"Connecter Wallet"** — MetaMask te demandera de confirmer
+- Réseau : **Hardhat Local**
+- Compte : celui importé avec 10 000 ETH
+- Clique **"Connecter Wallet"** sur le site
 
 ---
 
@@ -197,37 +145,36 @@ Ouvre **http://localhost:5173** dans Chrome.
 | Page | Accès | Ce que ça fait |
 |---|---|---|
 | **Accueil** | Public | Présentation du projet |
-| **Vérifier** | Public (sans wallet) | Vérifier l'authenticité d'un certificat via son CertID |
-| **Émettre** | Wallet requis + accrédité | Créer un nouveau certificat on-chain |
-| **Tableau de bord** | Wallet requis | Voir tous les certificats émis par ton compte |
-| **Révoquer** | Wallet requis + émetteur | Révoquer définitivement un certificat |
+| **Vérifier** | Public | Vérifier un certificat via CertID ou import PDF |
+| **Émettre** | Wallet + accrédité | Créer un certificat on-chain + mint NFT + QR Code + PDF |
+| **Tableau de bord** | Wallet | Historique des certificats émis |
+| **Révoquer** | Wallet + émetteur | Révoquer définitivement un certificat |
+| **Mon DID** | Wallet | Gérer son identité décentralisée |
 
 ---
 
 ### Flow de démonstration complet
 
-Voici comment tester toutes les fonctionnalités une fois le projet lancé :
-
 **1. Émettre un certificat**
-- Va sur **"Émettre"**
-- Remplis : Nom = "Alice Martin", Diplôme = "Master Informatique", Mention = "Très Bien", Date = 2024-06-15
-- Clique "Émettre le certificat" → Confirme dans MetaMask
-- Copie l'URL de vérification générée
+- Page **"Émettre"** → remplis le formulaire avec l'adresse Ethereum du diplômé
+- Confirme dans MetaMask → écran de succès avec QR Code
+- Clique **"⬡ Minter le badge NFT"** → confirme MetaMask → NFT #X lié au certificat
+- Clique **"Télécharger le PDF certifié"** → PDF avec QR Code intégré
 
-**2. Vérifier le certificat**
-- Va sur **"Vérifier"**
-- Colle le CertID ou utilise l'URL copiée
-- Tu verras : statut VALIDE, données on-chain, DID de l'émetteur
+**2. Vérifier via CertID**
+- Page **"Vérifier"** → colle le CertID
+- Affiche : statut VALIDE, données complètes, DID émetteur, NFT token
 
-**3. Voir le tableau de bord**
-- Va sur **"Tableau de bord"**
-- Tu vois la liste de tous les certificats émis avec leurs statuts
+**3. Vérifier via PDF**
+- Page **"Vérifier"** → **"📄 Choisir un PDF"** → importe le PDF téléchargé
+- Le QR Code est extrait automatiquement et la vérification se lance
 
-**4. Révoquer un certificat**
-- Va sur **"Révoquer"**
-- Colle le CertID
-- Coche la confirmation et clique "Révoquer définitivement" → Confirme dans MetaMask
-- Revérifie le certificat → il affiche maintenant "RÉVOQUÉ"
+**4. Gérer son DID**
+- Page **"Mon DID"** → voir/modifier son identité décentralisée
+- Le nom de l'établissement apparaît dans toutes les vérifications
+
+**5. Révoquer un certificat**
+- Page **"Révoquer"** → colle le CertID → confirme → statut passe à RÉVOQUÉ
 
 ---
 
@@ -235,9 +182,7 @@ Voici comment tester toutes les fonctionnalités une fois le projet lancé :
 
 ### Contexte
 
-La Phase 1 constitue le socle technique du projet. Elle couvre la conception de l'architecture on-chain, l'écriture des 4 Smart Contracts en Solidity, la mise en place de l'environnement de développement Hardhat 3, et la validation complète par 56 tests unitaires et d'intégration.
-
----
+Socle technique du projet. 4 Smart Contracts en Solidity, environnement Hardhat 3, 56 tests unitaires et d'intégration.
 
 ### 1.1 Environnement de développement
 
@@ -246,44 +191,26 @@ La Phase 1 constitue le socle technique du projet. Elle couvre la conception de 
 | Node.js | 24.x | Runtime JavaScript |
 | Hardhat | 3.3.0 | Framework de développement Solidity |
 | Solidity | 0.8.26 | Langage des Smart Contracts |
-| OpenZeppelin | 5.x | Bibliothèque de contrats sécurisés (ERC-721, Ownable) |
-| Ethers.js | 6.x | Interaction avec la blockchain |
-| Mocha + Chai | 11.x / 6.x | Framework de tests |
+| OpenZeppelin | 5.x | Bibliothèque ERC-721, Ownable |
+| Ethers.js | 6.x | Interaction blockchain |
+| Mocha + Chai | 11.x / 6.x | Tests |
 | TypeScript | 5.8 | Typage statique |
 
-**Points d'attention Hardhat 3 :**
-
-Hardhat 3 est un projet ESM pur. Il utilise `defineConfig` et un système de plugins. Dans les tests et scripts, on n'importe pas `ethers` depuis `hardhat` mais on utilise `await network.connect()` :
-
-```typescript
-// ✅ Hardhat 3
-import { network } from "hardhat";
-const { ethers } = await network.connect();
-```
-
----
-
 ### 1.2 Architecture des Smart Contracts
-
-Le système repose sur 4 contrats indépendants :
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    CERTCHAIN — ON-CHAIN                      │
-│                                                             │
 │  ┌──────────────────────┐    ┌──────────────────────────┐   │
 │  │  CertificateRegistry │    │      RevocationList       │   │
-│  │  (contrat principal) │    │   (révocation externe)   │   │
 │  │  - issueCertificate  │    │  - revoke(certId, motif) │   │
 │  │  - getCertificate    │    │  - isRevoked(certId)     │   │
 │  │  - revokeCertificate │    │  - getRevocationInfo     │   │
 │  │  - linkNFT           │    │                          │   │
 │  └──────────┬───────────┘    └──────────────────────────┘   │
-│             │ certId                                         │
 │             ▼                                               │
 │  ┌──────────────────────┐    ┌──────────────────────────┐   │
 │  │       CertNFT        │    │       DIDRegistry         │   │
-│  │    (ERC-721 badge)   │    │  (identités on-chain)    │   │
 │  │  - mintCertNFT       │    │  - registerDID           │   │
 │  │  - tokenURI          │    │  - resolveDID            │   │
 │  │  - getCertId         │    │  - getDIDUri             │   │
@@ -291,65 +218,21 @@ Le système repose sur 4 contrats indépendants :
 └─────────────────────────────────────────────────────────────┘
 ```
 
----
-
-### 1.3 CertificateRegistry.sol — Contrat Principal
-
-Registre central de tous les certificats. Stocke un hash SHA-256 des données (pas les données brutes, pour respecter le RGPD) ainsi que l'adresse émetteur, le timestamp, le statut de révocation et le lien IPFS.
-
-```solidity
-certId = keccak256(abi.encodePacked(certHash, msg.sender, block.timestamp));
-```
-
-Le certId est unique par combinaison (contenu + émetteur + moment). Il sert d'identifiant universel encodé dans le QR Code.
-
----
-
-### 1.4 RevocationList.sol — Révocation Externe
-
-Registre de révocation pour les tiers autorisés (ministère, organisme d'accréditation) qui ne sont pas l'émetteur original. Le frontend interroge les deux contrats pour déterminer le statut final :
-
-```
-statut_final = registry.revoked  OR  revocationList.isRevoked(certId)
-```
-
----
-
-### 1.5 DIDRegistry.sol — Identifiants Décentralisés
-
-Associe une identité lisible à une adresse Ethereum via le standard DID :
-
-```
-did:ethr:0x<adresse_ethereum>
-```
-
-Même si l'établissement ferme, son identité reste résolvable sur la blockchain.
-
----
-
-### 1.6 CertNFT.sol — Badge NFT ERC-721
-
-Minte un token NFT unique par certificat, assigné au diplômé. Représentation visuelle et portable du diplôme, affichable dans MetaMask ou sur OpenSea.
-
----
-
-### 1.7 Tests — 56 passants
+### 1.3 Tests — 56 passants
 
 ```
 npx hardhat test  →  56 passing (1s)
 ```
 
-| Fichier | Tests | Couverture |
-|---|---|---|
-| CertificateRegistry.test.ts | 13 | Accréditation, émission, révocation, lecture |
-| CertNFT.test.ts | 16 | Minting, métadonnées, contrôle d'accès |
-| DIDRegistry.test.ts | 11 | Enregistrement, désactivation, résolution |
-| RevocationList.test.ts | 12 | Revokers, révocation, double révocation |
-| Integration.test.ts | 4 | Flow complet émission → NFT → vérification |
+| Fichier | Tests |
+|---|---|
+| CertificateRegistry.test.ts | 13 |
+| CertNFT.test.ts | 16 |
+| DIDRegistry.test.ts | 11 |
+| RevocationList.test.ts | 12 |
+| Integration.test.ts | 4 |
 
----
-
-### 1.8 Structure des fichiers (blockchain/)
+### 1.4 Structure blockchain/
 
 ```
 blockchain/
@@ -359,18 +242,17 @@ blockchain/
 │   ├── DIDRegistry.sol
 │   └── CertNFT.sol
 ├── scripts/
-│   ├── deploy.ts       ← Déploiement des 4 contrats
-│   └── accredit.ts     ← Accréditation du compte de test
+│   ├── deploy.ts       ← Déploiement + copie auto dans frontend
+│   └── accredit.ts     ← Accréditation + DID du compte de test
 ├── test/
 │   ├── CertificateRegistry.test.ts
 │   ├── RevocationList.test.ts
 │   ├── DIDRegistry.test.ts
 │   ├── CertNFT.test.ts
 │   └── Integration.test.ts
-├── deployments.json    ← Adresses générées après déploiement
+├── deployments.json
 ├── hardhat.config.ts
-├── package.json
-└── tsconfig.json
+└── .env               ← PRIVATE_KEY + SEPOLIA_RPC_URL (ne pas committer)
 ```
 
 ---
@@ -379,9 +261,7 @@ blockchain/
 
 ### Contexte
 
-La Phase 2 construit l'interface utilisateur complète connectée aux Smart Contracts. Le frontend est conçu avec une direction artistique **Luxury Dark** — fond noir profond, typographie Cormorant Garamond, palette or et cyan, animations fluides.
-
----
+Interface utilisateur complète connectée aux Smart Contracts. Direction artistique **Luxury Dark** — fond noir, typographie Cormorant Garamond, palette or et cyan.
 
 ### 2.1 Stack Frontend
 
@@ -389,119 +269,165 @@ La Phase 2 construit l'interface utilisateur complète connectée aux Smart Cont
 |---|---|---|
 | React | 18.x | Framework UI |
 | TypeScript | 5.x | Typage statique |
-| Vite | 5.x | Bundler et serveur de développement |
-| Ethers.js | 6.x | Communication avec la blockchain |
-| MetaMask | Extension | Wallet et signature des transactions |
+| Vite | 5.x | Bundler |
+| Ethers.js | 6.x | Communication blockchain |
+| MetaMask | Extension | Wallet et signature |
 
----
-
-### 2.2 Architecture Frontend
-
-Le projet suit une **clean architecture** avec séparation stricte des responsabilités :
+### 2.2 Architecture Frontend — Clean Architecture
 
 ```
 frontend/src/
-├── abis/               ← ABIs JSON des contrats + adresses de déploiement
+├── abis/          ← ABIs JSON + adresses de déploiement
 ├── components/
-│   ├── layout/         ← Navbar
-│   └── ui/             ← Button, Card, Input, Badge (composants réutilisables)
-├── context/            ← WalletContext (état global MetaMask)
-├── hooks/              ← Logique blockchain (useVerify, useIssue, useRevoke, useDashboard)
-├── pages/              ← Pages complètes (Home, Verify, Issue, Dashboard, Revoke)
-├── styles/             ← Variables CSS globales et thème
-├── types/              ← Types TypeScript partagés
-└── utils/              ← Fonctions utilitaires (hash SHA-256, formatage adresses)
+│   ├── layout/    ← Navbar
+│   └── ui/        ← Button, Card, Input, Badge
+├── context/       ← WalletContext (état global MetaMask)
+├── hooks/         ← useVerify, useIssue, useRevoke, useDashboard, useMintNFT, useDID
+├── pages/         ← Home, Verify, Issue, Dashboard, Revoke, DID
+├── styles/        ← Thème luxury dark, variables CSS
+├── types/         ← Types TypeScript partagés
+└── utils/         ← hashCertData SHA-256, formatage adresses
 ```
 
-**Principe de séparation :** les composants UI ne touchent jamais directement Ethers.js. Toute la logique blockchain passe par les hooks custom.
-
----
+**Principe :** les composants UI ne touchent jamais Ethers.js directement. Toute la logique blockchain passe par les hooks custom.
 
 ### 2.3 Pages réalisées
 
-**Accueil** — Page hero avec présentation du projet, aperçu animé d'un certificat, statistiques et call-to-action.
-
-**Vérifier** — Saisie d'un CertID ou lecture depuis l'URL (QR Code ready). Interroge simultanément `CertificateRegistry` et `RevocationList` pour le statut final. Affiche les données du certificat et le DID de l'établissement émetteur. Fonctionne sans wallet (lecture seule).
-
-**Émettre** — Formulaire complet avec aperçu en temps réel du certificat. Calcule le hash SHA-256 des données côté client, envoie uniquement le hash on-chain (conformité RGPD). Affiche l'URL de vérification après émission.
-
-**Tableau de bord** — Récupère tous les events `CertificateIssued` émis par le wallet connecté via `queryFilter`. Affiche les statistiques (total, valides, révoqués) et la liste complète avec actions.
-
-**Révoquer** — Recherche un certificat par CertID, vérifie que l'utilisateur est bien l'émetteur, demande une confirmation explicite avant d'envoyer la transaction de révocation.
-
----
-
-### 2.4 Connexion MetaMask — WalletContext
-
-Le contexte global gère l'état du wallet et s'abonne aux events MetaMask pour détecter les changements de compte ou de réseau en temps réel.
-
-```typescript
-// Connexion
-const ethProvider = new ethers.BrowserProvider(window.ethereum);
-await ethProvider.send('eth_requestAccounts', []);
-
-// Lecture seule sans wallet (pour la vérification publique)
-const READ_ONLY_PROVIDER = new ethers.JsonRpcProvider('http://127.0.0.1:8545');
-```
+| Page | Fonctionnalité |
+|---|---|
+| Accueil | Hero animé, présentation, call-to-action |
+| Vérifier | Vérification par CertID, import PDF, détails complets on-chain |
+| Émettre | Formulaire + aperçu temps réel + mint NFT + QR Code + PDF |
+| Tableau de bord | Historique certificats, stats, actions |
+| Révoquer | Révocation avec double confirmation |
+| Mon DID | Enregistrement et gestion identité décentralisée |
 
 ---
 
-### 2.5 Structure des fichiers (frontend/src/)
+## Phase 3 — QR Code, NFT ERC-721 & DID
 
+### Fonctionnalités réalisées
+
+**QR Code**
+- Génération automatique du QR Code après émission (bibliothèque `qrcode.react`)
+- QR Code encodant l'URL de vérification `http://localhost:5173/verify?certId=0x...`
+- Lecture automatique du QR Code depuis un PDF importé (`jsqr` + `pdfjs-dist`)
+
+**PDF certifié**
+- Génération d'un PDF officiel téléchargeable après émission (`pdf-lib`)
+- Contient : nom, diplôme, mention, date, NFT token ID, QR Code de vérification
+- Import du PDF dans la page Vérifier → extraction automatique du certId
+
+**NFT ERC-721**
+- Mint du badge NFT depuis le frontend après émission du certificat
+- Hook `useMintNFT` : appelle `mintCertNFT()` puis `linkNFT()` automatiquement
+- TokenId affiché dans la vérification et le tableau de bord
+- NFT visible dans MetaMask du diplômé
+
+**DID (Decentralized Identifier)**
+- Page dédiée **"Mon DID"** dans la navbar
+- Enregistrement et mise à jour du DID depuis l'interface
+- Affichage du DID `did:ethr:0x...` et statut ACTIF/DÉSACTIVÉ
+- Désactivation irréversible avec double confirmation
+- DID de l'émetteur affiché lors de chaque vérification de certificat
+
+### Dépendances ajoutées en Phase 3
+
+```bash
+npm install qrcode.react pdf-lib qrcode pdfjs-dist jsqr
 ```
-frontend/src/
-├── abis/
-│   ├── deployments.json          ← Adresses des contrats (à mettre à jour après chaque déploiement)
-│   ├── CertificateRegistry.json  ← ABI
-│   ├── RevocationList.json       ← ABI
-│   ├── DIDRegistry.json          ← ABI
-│   └── CertNFT.json              ← ABI
-├── components/
-│   ├── layout/
-│   │   └── Navbar.tsx
-│   └── ui/
-│       ├── Button.tsx
-│       ├── Card.tsx
-│       ├── Input.tsx
-│       └── Badge.tsx
-├── context/
-│   └── WalletContext.tsx
-├── hooks/
-│   ├── useContracts.ts    ← Instanciation des 4 contrats Ethers.js
-│   ├── useVerify.ts       ← Vérification d'un certificat
-│   ├── useIssue.ts        ← Émission d'un certificat
-│   ├── useRevoke.ts       ← Révocation d'un certificat
-│   └── useDashboard.ts    ← Historique des certificats émis
-├── pages/
-│   ├── HomePage.tsx
-│   ├── VerifyPage.tsx
-│   ├── IssuePage.tsx
-│   ├── DashboardPage.tsx
-│   └── RevokePage.tsx
-├── styles/
-│   └── globals.css        ← Tokens de design, thème luxury dark
-├── types/
-│   └── index.ts
-└── utils/
-    └── crypto.ts          ← hashCertData, truncateAddress, formatTimestamp
+
+---
+
+## Phase 4 — Déploiement Sepolia ⚠️ En cours
+
+### Objectif
+
+Déployer les 4 Smart Contracts sur le réseau de test **Ethereum Sepolia** pour passer d'un environnement local à un environnement réel et permanent. Les contrats déployés sur Sepolia sont accessibles publiquement et vérifiables sur Etherscan.
+
+### Ce qui a été fait (40%)
+
+- ✅ `hardhat.config.ts` configuré avec le réseau Sepolia
+- ✅ Script `deploy.ts` mis à jour — copie automatiquement les adresses dans le frontend
+- ✅ Script `accredit.ts` mis à jour — compatible Sepolia et localhost
+- ✅ Package `dotenv` installé
+- ✅ Compte Alchemy créé — URL RPC Sepolia obtenue
+- ✅ 0.05 ETH Sepolia reçus sur le wallet `0xA2E28Ae7AdbE9c127D370f96b2A243686F49d059` (confirmé sur Etherscan Sepolia)
+- ✅ Fichier `.env` configuré avec `SEPOLIA_RPC_URL` et `PRIVATE_KEY`
+
+### Point bloquant actuel
+
+Le déploiement échoue avec l'erreur :
 ```
+Balance : 0.0 ETH
+ProviderError: insufficient funds for gas
+```
+
+La balance affichée par Hardhat est 0.0 ETH alors qu'Etherscan Sepolia confirme **0.05 ETH** sur l'adresse. Cause probable : la clé privée dans `.env` ne correspond pas exactement au compte `0xA2E28...9d059` qui détient les ETH, ou un problème de synchronisation entre l'URL RPC Alchemy et le compte.
+
+### Ce qu'il reste à faire
+
+1. Résoudre le problème de clé privée / balance
+2. Lancer le déploiement :
+```powershell
+npx hardhat run scripts/deploy.ts --network sepolia
+npx hardhat run scripts/accredit.ts --network sepolia
+```
+3. Mettre à jour `frontend/src/abis/deployments.json` avec les adresses Sepolia
+4. Vérifier les contrats sur **https://sepolia.etherscan.io**
+
+### Différence Local vs Sepolia
+
+| | Local (actuel) | Sepolia (cible) |
+|---|---|---|
+| Contrats | Sur le PC seulement | Blockchain permanente |
+| Durée | Disparaît à la fermeture | Permanent |
+| Accès | Local uniquement | Mondial |
+| ETH | Fictifs | ETH de test gratuits |
+| Etherscan | ❌ | ✅ Liens vérifiables |
+
+### Pour la démo
+
+Le projet fonctionne à 100% en local. Sepolia est un **plus** pour la soutenance (prouver que c'est un vrai projet blockchain) mais pas obligatoire pour la démonstration des fonctionnalités.
+
+---
+
+## Phase 5 — Documentation & Soutenance 🔜
+
+### Ce qui est fait (30%)
+
+- ✅ README complet avec guide d'installation et d'utilisation
+- ✅ Cahier des charges réalisé
+- ✅ Architecture documentée
+
+### Ce qui reste
+
+- 🔜 Slides de présentation pour la soutenance
+- 🔜 Guide de démo pour la soutenance
+- 🔜 Mise à jour finale du README après Phase 4
 
 ---
 
 ### Commandes utiles
 
 ```powershell
-# Lancer le nœud blockchain local
+# Compiler les contrats
+npx hardhat compile
+
+# Lancer tous les tests
+npx hardhat test
+
+# Lancer le nœud local
 npx hardhat node
 
-# Déployer les contrats
+# Déployer en local
 npx hardhat run scripts/deploy.ts --network localhost
 
-# Accréditer le compte de test
+# Accréditer en local
 npx hardhat run scripts/accredit.ts --network localhost
 
-# Lancer les tests
-npx hardhat test
+# Déployer sur Sepolia (Phase 4)
+npx hardhat run scripts/deploy.ts --network sepolia
 
 # Lancer le frontend
 npm run dev
@@ -509,24 +435,4 @@ npm run dev
 
 ---
 
-## Phase 3 — PDF certifié avec QR Code & vérification par import
-
-### Contexte
-La Phase 3 enrichit la DApp avec un certificat PDF téléchargeable intégrant un QR Code de vérification, ainsi que la possibilité d’importer directement ce PDF pour en vérifier l’authenticité.
-
-### Fonctionnalités ajoutées
-- génération d’un PDF certifié téléchargeable
-- intégration du QR Code dans le PDF
-- bouton de téléchargement après émission
-- import du PDF dans la page Vérifier
-- extraction automatique du QR depuis le PDF
-- vérification automatique du certificat depuis le PDF importé
-
-### Dépendances frontend à installer
-```bash
-npm install qrcode.react pdf-lib qrcode pdfjs-dist jsqr
-```
-
----
-
-*README maintenu — CertChain DApp v1.3 — Avril 2026*
+*README maintenu — CertChain DApp v1.4 — Avril 2026*

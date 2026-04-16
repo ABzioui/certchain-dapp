@@ -48,9 +48,9 @@ export interface IssueCertFormData {
 export type WalletStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
 export interface WalletState {
-  status:    WalletStatus;
-  address:   string | null;
-  chainId:   number | null;
+  status:           WalletStatus;
+  address:          string | null;
+  chainId:          number | null;
   isCorrectNetwork: boolean;
 }
 
@@ -65,4 +65,4 @@ export interface Notification {
   message: string;
 }
 
-export type PageId = 'home' | 'verify' | 'issue' | 'revoke' | 'dashboard';
+export type PageId = 'home' | 'verify' | 'issue' | 'revoke' | 'dashboard' | 'did';

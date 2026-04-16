@@ -6,6 +6,7 @@ import { VerifyPage } from './pages/VerifyPage';
 import { IssuePage } from './pages/IssuePage';
 import { DashboardPage } from './pages/DashboardPage';
 import { RevokePage } from './pages/RevokePage';
+import { DIDPage } from './pages/DIDPage';
 import './styles/globals.css';
 import type { PageId } from './types';
 
@@ -19,6 +20,7 @@ function AppContent() {
       case 'issue':     return <IssuePage />;
       case 'dashboard': return <DashboardPage onNavigate={setCurrentPage} />;
       case 'revoke':    return <RevokePage />;
+      case 'did':       return <DIDPage />;
       default:          return <HomePage onNavigate={setCurrentPage} />;
     }
   };
